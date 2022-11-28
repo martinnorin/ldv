@@ -41,3 +41,6 @@ tokens/
 
 # test-data folder
 test-data/
+
+# MacOS
+.DS_Store
