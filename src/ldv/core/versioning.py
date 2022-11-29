@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from ldv.constants.versioning import VersioningConstants as VC
 from ldv.dto.config import ConfigDto
@@ -28,6 +28,10 @@ class Versioning:
         self._config_values: ConfigDto = self._config.get_config_values()
         self._auth_values = BaseAuth.get_base_auth_values()
         self._init_from_config(self._config_values)
+
+    @property
+    def path(self) -> str:
+        return self._config_values.local.path
 
     def _init_from_config(self, config: ConfigDto):
         """ Initialize instance from config values.
@@ -333,7 +337,11 @@ class Versioning:
 
         return f"{filename}.{version}"
 
-    def track(self, filepath: str, upload: Optional[bool] = None) -> DigestDto:
+    def track(
+        self,
+        filepath: str,
+        upload: Optional[bool] = None
+    ) -> Union[DigestDto, None]:
         """ Version track file.
 
         Args:
@@ -347,12 +355,17 @@ class Versioning:
                     If file not uploaded, it will be stored in local cache.
 
         Returns:
-            Digest object
+            Digest object or None if trying to version track .gitignore file
         """
 
         # Verify to catch error errors early
         self._config.verify_config_values_from_object(self._config_values)
         self._remote.verify_authentication()
+
+        # Don't version track the .gitignore file.
+        filename = os.path.basename(filepath)
+        if filename == VC.GIT_IGNORE_FILE:
+            return None
 
         # Check if file exists
         # Except setting parent path,
