@@ -30,7 +30,7 @@ def init(path: str, url: str, rerun_track_all: bool, dont_upload: bool):
         url (str): remote storage url
         dont_upload (bool): flag if upload should not be done
     """
-    ldv.init.init(path=path, url=url, upload=not dont_upload)
+    ldv.core.init.init(path=path, url=url, upload=not dont_upload)
 
     if rerun_track_all:
         from ldv.core.versioning import Versioning

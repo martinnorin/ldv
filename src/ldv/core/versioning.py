@@ -38,15 +38,12 @@ class Versioning:
         """
 
         self._config.verify_config_values_from_object(config)
-
-        path: str = config.local.path
-        self._set_paths(path)
         self._remote: BaseRemote = BaseRemote.get_remote(
             url=config.remote.url,
             provider=self._auth_values.provider
         )
-        self._remote_base_path = self._remote.remote_base_path
         self._upload: bool = config.remote.upload
+        self._set_paths(path=config.local.path)
 
     def _set_paths(self, path: str) -> None:
         """ Set paths.
@@ -58,7 +55,8 @@ class Versioning:
           Absolute: Yes
           Example: /Users/myusername/path/to/data
         self._remote_base_path is found in url to remote storage
-          Used for building correct remote file path for upload and download
+          Used for building correct remote file path for upload and download.
+          It doesn't need to be provided.
           Absolute: No
           Example: ldv_test in s3://niva-nlu-dev/ldv_test/
                                      temp_data/test_absolute_versioning.py
@@ -68,6 +66,7 @@ class Versioning:
             path = os.path.abspath(path)
 
         self._parent_path = str(Path(path).parent)
+        self._remote_base_path = self._remote.remote_base_path
 
     def _to_relative_path(self, filepath: str) -> str:
         """ Convert to relative path.
@@ -183,7 +182,10 @@ class Versioning:
 
         """
 
-        return (f"{base_remote_path}/"
+        base_remote_path_prefix: str = ""
+        if base_remote_path:
+            base_remote_path_prefix = base_remote_path + "/"
+        return (f"{base_remote_path_prefix}"
                 f"{relative_remote_path}")
 
     @staticmethod
@@ -209,8 +211,11 @@ class Versioning:
                 content"
 
         """
+        base_remote_path_prefix: str = ""
+        if base_remote_path:
+            base_remote_path_prefix = base_remote_path + "/"
 
-        return (f"{base_remote_path}/"
+        return (f"{base_remote_path_prefix}"
                 f"{relative_remote_path}/"
                 f"{version}/"
                 f"{filetype.value}")

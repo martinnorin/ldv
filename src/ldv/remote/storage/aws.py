@@ -28,7 +28,11 @@ class AwsRemoteStorage(BaseRemoteStorage):
         # Split into bucket and remote base path
         # E.g. mybucket/mypath/subpath split into
         # ['mybucket', 'mypath/subpath']
-        bucket, remote_base_path = path.split("/", 1)
+        if "/" in path:
+            bucket, remote_base_path = path.split("/", 1)
+        else:
+            bucket = path
+            remote_base_path = None
         self._bucket = bucket
         self._remote_base_path = remote_base_path
 
