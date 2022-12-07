@@ -20,7 +20,21 @@ echo " -- Upgrade pip"
 python3.10 -m pip install --upgrade pip
 
 # Install packages
-# Use this on first run of script
-# pip install pylama[mypy,vulture,pylint] pre-commit bandit
-echo " -- Install packages from requirements file"
-pip install -r requirements/dev-venv.txt
+# Either clean install has been requested or requirements file doesn't exist
+if [[ ! -f "requirements/dev-venv.txt" ]]
+then
+    echo " -- Install packages by name"
+    # Install packages
+    # pip install pylama[mypy,vulture,pylint] pre-commit bandit boto3 requests pyarrow pandas haversine
+    pip install build twine
+    # Install our package in dev mode
+    pip install -e .[ALL]
+    # Create requirements file without our package
+    pip freeze --exclude-editable > requirements/dev-venv.txt
+    # Add our package in dev mode to requirements file
+    echo "-e ." >> requirements/dev-venv.txt
+else
+    # File exists and will be used for installation
+    echo " -- Install packages from requirements file"
+    pip install -r requirements/dev-venv.txt
+fi
