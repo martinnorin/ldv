@@ -98,4 +98,4 @@ ldv versioning list-versions local-data-folder/first_file.txt.digest
 ```
 
 # Contact
-Martin Norin, ldv@martinnorin.se
+Martin Neumann, ldv@martinneumann.se
